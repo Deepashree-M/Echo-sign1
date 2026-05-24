@@ -5,8 +5,8 @@ from mediapipe.tasks.python import vision
 import csv
 import os
 
-SIGN_LABEL = "HELP"
-SAMPLES_TO_COLLECT = 300
+SIGN_LABEL = "YES"
+SAMPLES_TO_COLLECT = 600
 SAVE_PATH = "../dataset/"
 
 os.makedirs(SAVE_PATH, exist_ok=True)
