@@ -111,3 +111,45 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* Custom ASL Hand Motion Animations */
+@keyframes drawJ {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(15px, -5px); }
+  50% { transform: translate(15px, 45px); }
+  80% { transform: translate(-30px, 60px) rotate(-10deg); }
+  90% { transform: translate(-35px, 35px) rotate(-15deg); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes drawZ {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(50px, 0); }
+  65% { transform: translate(-50px, 60px); }
+  90% { transform: translate(0px, 60px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-draw-j {
+  animation: drawJ 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.animate-draw-z {
+  animation: drawZ 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeInScale 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+

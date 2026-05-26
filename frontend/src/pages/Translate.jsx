@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Volume2, Camera, Hand, RotateCcw } from "lucide-react";
+import { Volume2, Camera, Hand, RotateCcw, Mic } from "lucide-react";
 
 export default function Translate() {
   const [mode, setMode] = useState("sign-to-text");
@@ -15,13 +15,13 @@ export default function Translate() {
       {/* Custom Mode Switcher Toggles */}
       <div className="mb-8 flex justify-center">
         <div className="h-12 rounded-xl bg-white dark:bg-[#111827] p-1 flex border border-slate-200 dark:border-white/5 gap-1 shadow-sm">
-          <button 
+          <button
             onClick={() => setMode("sign-to-text")}
             className={`rounded-lg px-6 text-sm font-semibold transition-all ${mode === "sign-to-text" ? "bg-violet-600 dark:bg-blue-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800 dark:text-gray-400 dark:hover:text-white"}`}
           >
             ✋ Sign ➔ Text
           </button>
-          <button 
+          <button
             onClick={() => setMode("speech-to-sign")}
             className={`rounded-lg px-6 text-sm font-semibold transition-all ${mode === "speech-to-sign" ? "bg-violet-600 dark:bg-blue-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800 dark:text-gray-400 dark:hover:text-white"}`}
           >
@@ -39,11 +39,15 @@ export default function Translate() {
           <div className="absolute left-10 top-10 h-16 w-16 rounded-lg border-2 border-violet-500/40 dark:border-[#AAFF00]/40" />
           <div className="absolute bottom-12 right-12 h-20 w-14 rounded-lg border-2 border-violet-500/40 dark:border-[#AAFF00]/40" />
 
-          <Camera className="mb-4 h-12 w-12 text-slate-700 dark:text-gray-600" />
+          {mode === "sign-to-text" ? (
+            <Camera className="mb-4 h-12 w-12 text-slate-700 dark:text-gray-600" />
+          ) : (
+            <Mic className="mb-4 h-12 w-12 text-slate-700 dark:text-gray-600" />
+          )}
           <p className="text-sm font-medium text-slate-400 dark:text-gray-400">
             {mode === "sign-to-text" ? "Camera Feed — Hand Tracking Active" : "Speech Input Active"}
           </p>
-          <p className="mt-1 text-xs text-slate-600 dark:text-gray-500 font-mono">MediaPipe Hand Tracking</p>
+          <p className="mt-1 text-xs text-slate-600 dark:text-gray-500 font-mono">Voice input</p>
 
           <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-violet-500/10 border border-violet-500/20 dark:border-transparent dark:bg-[#AAFF00]/15 px-3 py-1.5 text-xs font-semibold text-violet-600 dark:text-[#AAFF00]">
             <span className="h-2 w-2 rounded-full bg-violet-600 dark:bg-[#AAFF00] animate-pulse" />
@@ -83,7 +87,7 @@ export default function Translate() {
           </div>
 
           {mode === "sign-to-text" && (
-            <button 
+            <button
               onClick={() => {
                 const talk = new SpeechSynthesisUtterance("Hello, welcome to the presentation. We will discuss accessibility today.");
                 window.speechSynthesis.speak(talk);

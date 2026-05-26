@@ -41,11 +41,11 @@ export default function Home() {
           <h1 className="text-5xl font-extrabold leading-tight tracking-tight text-slate-900 dark:text-white sm:text-6xl lg:text-7xl">
             Bridging the{" "}
             <span className="bg-gradient-to-r from-violet-600 to-indigo-500 dark:from-[#AAFF00] dark:to-lime-400 bg-clip-text text-transparent">Sound Gap</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-gray-400 sm:text-xl">
-            Echo-Sign uses real-time AI translation to connect deaf and hearing
-            communities — making every conversation inclusive, every classroom accessible, every moment understood.
-          </p>
+          </h1><center>
+            <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-relaxed text-slate-600 dark:text-gray-400 sm:text-xl">
+              Echo-Sign uses real-time AI translation to connect deaf and hearing
+              communities — making every conversation inclusive, every classroom accessible, every moment understood.
+            </p></center>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               to="/translate"
