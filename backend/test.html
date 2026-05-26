@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkpoint 3 Two-Way Simulator</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
+        .box { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ccc; }
+        button { padding: 8px 12px; font-weight: bold; cursor: pointer; margin-right: 5px; }
+        input { padding: 8px; width: 250px; }
+        .log { background: #222; color: #0f0; padding: 10px; font-family: monospace; border-radius: 4px; margin-top: 10px; height: 100px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+
+    <h1>📡 Echo-Sign Realtime Simulator (Checkpoint 3)</h1>
+
+    <div class="box">
+        <h3>Step 1: Setup a Session Room</h3>
+        <button onclick="createSession()">1. Create Room (As Signer)</button>
+        <span id="roomDisplay" style="font-size: 20px; font-weight: bold; color: blue; margin-left: 15px;"></span>
+    </div>
+
+    <div class="box">
+        <h3>Step 2: Simulate Another Device Joining</h3>
+        <input type="text" id="targetRoomInput" placeholder="Enter Room Code">
+        <button onclick="joinAsListener()">2. Join Room As Listener</button>
+    </div>
+
+    <div class="box">
+        <h3>Step 3: Live Transmission Panel</h3>
+        <input type="text" id="msgInput" placeholder="Type data packet here...">
+        <br><br>
+        <button onclick="simulateSignAI()" style="background: #e1f5fe; color: #0288d1;">📱 Phone: Simulate Sign AI Translation</button>
+        <button onclick="simulateVoiceMic()" style="background: #e8f5e9; color: #388e3c;">💻 Laptop: Simulate Mic Voice Capture</button>
+    </div>
+
+    <div class="box">
+        <h3>📬 Incoming Device Monitor</h3>
+        <div id="terminalLog" class="log">Waiting for action...</div>
+    </div>
+
+    <script>
+        const socket = io('http://localhost:3000');
+        let activeRoom = "";
+
+        function logToScreen(msg) {
+            const logBox = document.getElementById('terminalLog');
+            logBox.innerHTML += `<div>${msg}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        // --- HOST CREATES ROOM ---
+        function createSession() {
+            socket.emit('create-room');
+        }
+        socket.on('room-created', (roomCode) => {
+            activeRoom = roomCode;
+            document.getElementById('roomDisplay').innerText = `Active Room: ${roomCode}`;
+            socket.emit('join-room', { roomCode: roomCode, role: 'signer' });
+            logToScreen(`✨ Created and Joined Room [${roomCode}] as SIGNER.`);
+        });
+
+        // --- SECOND DEVICE JOINS ---
+        function joinAsListener() {
+            const code = document.getElementById('targetRoomInput').value;
+            if(!code) return alert("Type a room code first!");
+            socket.emit('join-room', { roomCode: code, role: 'listener' });
+            logToScreen(`🏠 Sent request to join Room [${code}] as LISTENER.`);
+        }
+
+        // --- SENDING PACKETS ---
+        function simulateSignAI() {
+            const text = document.getElementById('msgInput').value || "HELLO";
+            socket.emit('send-sign-text', text);
+            logToScreen(`📤 Sent Sign-AI Packet: "${text}"`);
+        }
+
+        function simulateVoiceMic() {
+            const text = document.getElementById('msgInput').value || "Good morning";
+            socket.emit('send-spoken-text', text);
+            logToScreen(`📤 Sent Voice-Mic Packet: "${text}"`);
+        }
+
+        // --- LISTENING FOR PACKETS ---
+        socket.on('receive-sign-text', (data) => {
+            logToScreen(`📥 INCOMING SIGN TEXT FOR LISTENER DISPLAY: <b style="color:cyan;">"${data}"</b>`);
+        });
+
+        socket.on('receive-spoken-text', (data) => {
+            logToScreen(`📥 INCOMING VOICE TEXT FOR SIGNER ANIMATION: <b style="color:yellow;">"${data}"</b>`);
+        });
+    </script>
+</body>
+</html>
