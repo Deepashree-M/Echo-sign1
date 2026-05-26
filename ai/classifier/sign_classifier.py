@@ -18,11 +18,29 @@ VisionRunningMode = mp.tasks.vision.RunningMode
 options = HandLandmarkerOptions(
     base_options=BaseOptions(model_asset_path=LANDMARKER_PATH),
     running_mode=VisionRunningMode.IMAGE,
-    num_hands=1
+    num_hands=2
 )
 
-cap = cv2.VideoCapture(0)
+HAND_CONNECTIONS = [
+    (0,1),(1,2),(2,3),(3,4),
+    (0,5),(5,6),(6,7),(7,8),
+    (0,9),(9,10),(10,11),(11,12),
+    (0,13),(13,14),(14,15),(15,16),
+    (0,17),(17,18),(18,19),(19,20),
+    (5,9),(9,13),(13,17)
+]
 
+def draw_mesh(frame, hand_landmarks):
+    h, w, _ = frame.shape
+    points = []
+    for lm in hand_landmarks:
+        cx, cy = int(lm.x * w), int(lm.y * h)
+        points.append((cx, cy))
+        cv2.circle(frame, (cx, cy), 5, (0, 255, 0), -1)
+    for start, end in HAND_CONNECTIONS:
+        cv2.line(frame, points[start], points[end], (255, 255, 255), 2)
+
+cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Camera not found!")
     exit()
@@ -33,7 +51,6 @@ with HandLandmarker.create_from_options(options) as landmarker:
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("Cannot read frame")
             continue
 
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -43,27 +60,30 @@ with HandLandmarker.create_from_options(options) as landmarker:
         label = "No hand detected"
 
         if result.hand_landmarks:
-            hand = result.hand_landmarks[0]
+            hand1 = result.hand_landmarks[0]
             features = []
-            for lm in hand:
+            for lm in hand1:
                 features.extend([lm.x, lm.y, lm.z])
+
+            if len(result.hand_landmarks) == 2:
+                hand2 = result.hand_landmarks[1]
+                for lm in hand2:
+                    features.extend([lm.x, lm.y, lm.z])
+            else:
+                features.extend([0.0] * 63)
 
             prediction = model.predict([features])[0]
             confidence = model.predict_proba([features]).max() * 100
             label = f"{prediction} ({confidence:.0f}%)"
 
-            for lm in hand:
-                h, w, _ = frame.shape
-                cx, cy = int(lm.x * w), int(lm.y * h)
-                cv2.circle(frame, (cx, cy), 5, (0, 255, 0), -1)
+            for hand in result.hand_landmarks:
+                draw_mesh(frame, hand)
 
         cv2.putText(frame, label, (10, 50),
                     cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
-
         cv2.imshow("Echo Sign — Live Recognition", frame)
 
-        key = cv2.waitKey(30) & 0xFF
-        if key == ord('q'):
+        if cv2.waitKey(30) & 0xFF == ord('q'):
             break
 
 cap.release()

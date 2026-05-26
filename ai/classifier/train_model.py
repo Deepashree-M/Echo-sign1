@@ -27,6 +27,7 @@ X = dataset.iloc[:, :-1].values
 y = dataset.iloc[:, -1].values
 
 print(f"Total samples: {len(X)}")
+print(f"Features per sample: {X.shape[1]}")
 print(f"Signs: {list(set(y))}")
 
 X_train, X_test, y_train, y_test = train_test_split(
